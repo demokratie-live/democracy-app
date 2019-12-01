@@ -23,7 +23,7 @@ version_number = package["version"]
 
 platform :ios do
   desc "Installs the certificates locally"
-    private_lane :install_certificates do
+    lane :install_certificates do
     if ENV['TRAVIS']
       tmp_keychain = "temporary_keychain"
       create_keychain(

@@ -33,8 +33,13 @@ matrix:
         - nvm alias default $NODE_VERSION
         - npm install -g react-native-cli
         - npm install -g detox-cli
+        - cd packages/mobile-app/ios
+        - bundle install
+        - cd $TRAVIS_BUILD_DIR
       script:
-        - cd packages/mobile-app
+        - cd packages/mobile-app/ios
+        - bundle exec fastlane ios install_certificates
+        - cd ..
         - detox build --configuration ios.sim.debug
         - detox test --configuration ios.sim.debug --cleanup
 
