@@ -8,7 +8,7 @@ cache:
 matrix:
   include:
     - stage: Testing
-    - language: swift
+      language: swift
       os: osx
       osx_image: xcode11.1
       # if: branch = master AND commit_message !~ /(no-deploy)/
@@ -39,7 +39,7 @@ matrix:
         - detox test --configuration ios.sim.debug --cleanup
 
     - stage: Deploy
-    - language: swift
+      language: swift
       os: osx
       osx_image: xcode11.1
       # if: branch = master AND commit_message !~ /(no-deploy)/
