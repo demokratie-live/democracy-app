@@ -7,10 +7,44 @@ cache:
     - packages/mobile-ui/node_modules
 matrix:
   include:
+    - stage: Testing
     - language: swift
       os: osx
       osx_image: xcode11.1
-      if: branch = master AND commit_message !~ /(no-deploy)/
+      # if: branch = master AND commit_message !~ /(no-deploy)/
+      if: commit_message !~ /(no-deploy)/
+      env:
+        - NODE_VERSION=stable
+      node_js: false
+      before_install:
+        - nvm install 10
+        - node --version
+        - npm install -g yarn
+        - yarn -version
+      install:
+        - yarn
+        - yarn pods
+        - brew tap wix/brew
+        - brew install applesimutils
+        - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+        - export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+        - nvm install $NODE_VERSION
+        - nvm use $NODE_VERSION
+        - nvm alias default $NODE_VERSION
+
+        - npm install -g react-native-cli
+        - npm install -g detox-cli
+      script:
+        - cd packages/mobile-app
+        - detox build --configuration ios.sim.debug
+        - detox test --configuration ios.sim.debug --cleanup
+
+    - stage: Deploy
+    - language: swift
+      os: osx
+      osx_image: xcode11.1
+      # if: branch = master AND commit_message !~ /(no-deploy)/
+      if: commit_message !~ /(no-deploy)/
       node_js: false
       before_install:
         - nvm install 10
