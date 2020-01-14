@@ -126,6 +126,7 @@ android {
     dexOptions {
         preDexLibraries false
         javaMaxHeapSize "8g"
+        jumboMode true  // This for string limit
     }
 
     compileOptions {
@@ -140,6 +141,7 @@ android {
 
         // react-native-notifications
         missingDimensionStrategy "RNNotifications.reactNativeVersion", "reactNative60" // See note below!
+        multiDexEnabled true // This is for method limit
         
         versionCode 102103
         versionName "1.2.3"
@@ -216,7 +218,7 @@ dependencies {
 
     // react-native-notifications
     implementation project(':reactnativenotifications')
-    implementation 'com.google.firebase:firebase-core:16.0.0'
+    implementation 'com.google.firebase:firebase-core:16.0.7'
 
     if (enableHermes) {
         def hermesPath = "../../../../node_modules/hermes-engine/android/";
@@ -225,6 +227,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    def multidex_version = "2.0.1"
+    implementation 'androidx.multidex:multidex:$multidex_version'
 }
 
 // react-native-notifications

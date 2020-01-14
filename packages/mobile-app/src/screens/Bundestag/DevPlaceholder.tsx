@@ -1,6 +1,6 @@
-import React, { FC, useContext } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components/native';
-import { Text, Button } from 'react-native';
+import { Text, Button, Platform, AppState, AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation, CompositeNavigationProp } from '@react-navigation/core';
 import { BundestagRootStackParamList } from '../../routes/Sidebar/Bundestag';
@@ -13,6 +13,10 @@ import { SidebarParamList } from '../../routes/Sidebar';
 import { TopTabParamList } from '../../routes/Sidebar/Bundestag/TabView';
 import { InitialStateContext } from '../../context/InitialStates';
 import VotesLocal from '../../lib/VotesLocal';
+import NotificationsIOS, {
+  NotificationsAndroid,
+} from 'react-native-notifications';
+import DeviceInfo from 'react-native-device-info';
 
 const Container = styled.View`
   flex: 1;
@@ -35,7 +39,93 @@ const NotificationWrapper = styled.View`
   background-color: lightblue;
 `;
 
+const isIOS = Platform.OS === 'ios';
+const isAndroid = Platform.OS === 'android';
+
 const NotificationDev = () => {
+  const [appState] = useState(AppState.currentState);
+
+  let registered = false;
+  const onPushRegistered = async (deviceToken: string) => {
+    // TODO: Send the token to my server so it could send back push notifications...
+    console.log(deviceToken);
+  };
+
+  const onPushRegistrationFailed = (error: any) => {
+    console.error(error);
+  };
+
+  const handleNotificationPressWithDelay = delay => async () => {
+    const params = [this.userId, delay];
+    await fetch(
+      `http://192.168.178.12:7777/test-send/${params.filter(p => p).join('/')}`,
+    )
+      .then(res => console.log({ res }))
+      .catch(error => console.log({ error }));
+  };
+
+  const handleAppStateChange = async (nextAppState: AppStateStatus) => {
+    if (
+      appState.match(/inactive|background/) &&
+      nextAppState === 'active' &&
+      registered
+    ) {
+      addNotificationsEventListeners();
+      if (isIOS) {
+        const notification = await PushNotificationIOS.getInitialNotification();
+        if (notification) {
+          this.onNotificationReceivedBackground(notification);
+        }
+      }
+      if (isAndroid) {
+        const notification = await PendingNotifications.getInitialNotification();
+        if (notification) {
+          this.onAndroidNotificationReceived(notification);
+        }
+      }
+    }
+    this.setState({ appState: nextAppState });
+  };
+
+  useEffect(() => {
+    AppState.addEventListener('change', handleAppStateChange);
+    if (isIOS && !DeviceInfo.isEmulatorSync()) {
+      NotificationsIOS.requestPermissions();
+      NotificationsIOS.addEventListener(
+        'remoteNotificationsRegistered',
+        onPushRegistered,
+      );
+      NotificationsIOS.addEventListener(
+        'remoteNotificationsRegistrationFailed',
+        onPushRegistrationFailed,
+      );
+    }
+    /* Android */
+    if (isAndroid) {
+      NotificationsAndroid.setRegistrationTokenUpdateListener(onPushRegistered);
+    }
+    return () => {
+      if (isIOS) {
+        NotificationsIOS.removeEventListener(
+          'remoteNotificationsRegistered',
+          onPushRegistered,
+        );
+        NotificationsIOS.removeEventListener(
+          'remoteNotificationsRegistrationFailed',
+          onPushRegistrationFailed,
+        );
+        NotificationsIOS.removeEventListener(
+          'notificationReceivedForeground',
+          onNotificationReceivedForeground,
+        );
+        NotificationsIOS.removeEventListener(
+          'notificationOpened',
+          onNotificationOpened,
+        );
+      }
+    };
+  }, []);
+
   return (
     <NotificationWrapper>
       <Button
