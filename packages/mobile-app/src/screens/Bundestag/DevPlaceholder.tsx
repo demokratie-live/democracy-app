@@ -45,7 +45,7 @@ const isAndroid = Platform.OS === 'android';
 const NotificationDev = () => {
   const [appState] = useState(AppState.currentState);
 
-  let registered = false;
+  const registered = false;
   const onPushRegistered = async (deviceToken: string) => {
     // TODO: Send the token to my server so it could send back push notifications...
     console.log(deviceToken);
@@ -124,7 +124,7 @@ const NotificationDev = () => {
         );
       }
     };
-  }, []);
+  }, [handleAppStateChange]);
 
   return (
     <NotificationWrapper>
