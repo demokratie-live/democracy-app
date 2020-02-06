@@ -149,12 +149,7 @@ class WahlOMeter extends PureComponent<Props> {
                   x: selectedIndex * this.state.width,
                 });
               }}
-              onMomentumScrollEnd={this.onScrollEndDrag}
-              ref={e => {
-                if (e) {
-                  this.scrollView = e;
-                }
-              }}>
+              onMomentumScrollEnd={this.onScrollEndDrag}>
               {[bundestagScreen, fraktionenScreen, wahlkreisScreen]}
             </ScrollViewCmp>
           </>
@@ -185,10 +180,7 @@ class WahlOMeter extends PureComponent<Props> {
                   x: selectedIndex * this.state.width,
                 });
               }}
-              onMomentumScrollEnd={this.onScrollEndDrag}
-              ref={e => {
-                this.scrollView = e;
-              }}>
+              onMomentumScrollEnd={this.onScrollEndDrag}>
               {[bundestagScreen, fraktionenScreen, wahlkreisScreen]}
             </ScrollViewCmp>
           </>

@@ -1,16 +1,16 @@
-import 'react-native-gesture-handler'; // TODO remove workaround https://github.com/kmagiera/react-native-gesture-handler/issues/320#issuecomment-538190653
-import React, { useState, useContext, useEffect } from 'react';
-import { NavigationNativeContainer } from '@react-navigation/native';
+import { InitialState } from '@react-navigation/core';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Introduction from '../screens/modals/Introduction';
-import Verification from './Verification';
+import React, { useContext, useEffect, useState } from 'react';
+import DeviceInfo from 'react-native-device-info';
+import 'react-native-gesture-handler'; // TODO remove workaround https://github.com/kmagiera/react-native-gesture-handler/issues/320#issuecomment-538190653
 import { InitialStateContext } from '../context/InitialStates';
 import { VerificationProvider } from '../context/Verification';
-import DeviceInfo from 'react-native-device-info';
-import { InitialState } from '@react-navigation/core';
-import { SidebarNavigation } from './Sidebar';
-import { PdfScreen } from '../screens/modals/Pdf/Pdf';
 import { ConstituencyScreen } from '../screens/modals/Constituency';
+import Introduction from '../screens/modals/Introduction';
+import { PdfScreen } from '../screens/modals/Pdf/Pdf';
+import { SidebarNavigation } from './Sidebar';
+import Verification from './Verification';
 
 export type RootStackParamList = {
   Sidebar: undefined;
@@ -57,7 +57,7 @@ const App = () => {
   }
 
   return (
-    <NavigationNativeContainer initialState={initialState}>
+    <NavigationContainer initialState={initialState}>
       <RootStack.Navigator
         mode="modal"
         screenOptions={{
@@ -101,7 +101,7 @@ const App = () => {
           />
         )}
       </RootStack.Navigator>
-    </NavigationNativeContainer>
+    </NavigationContainer>
   );
 };
 
